@@ -6,8 +6,19 @@ with open('old_report.json', 'r') as old_file, open('new_report.json', 'r') as n
     new_data = json.load(new_file)
 
 # Extract the "reference" values from both reports
-old_references = set(issue['reference'] for issue in old_data['components'][0]['securityData']['securityIssues'])
-new_references = set(issue['reference'] for issue in new_data['components'][0]['securityData']['securityIssues'])
+old_references = set()
+for component in old_data.get("components", []):
+    for issue in component.get("securityData", {}).get("securityIssues", []):
+        reference = issue.get("reference")
+        if reference:
+            old_references.add(reference)
+
+new_references = set()
+for component in new_data.get("components", []):
+    for issue in component.get("securityData", {}).get("securityIssues", []):
+        reference = issue.get("reference")
+        if reference:
+            new_references.add(reference)
 
 # Find new references in the new report compared to the old report
 new_references_only = new_references - old_references
