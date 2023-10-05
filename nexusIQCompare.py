@@ -9,22 +9,26 @@ with open(current_report_path, 'r') as current_report_file, open(previous_report
     current_report = json.load(current_report_file)
     previous_report = json.load(previous_report_file)
 
-# Extract CVE IDs from the "Components" > "securityData" > "securityIssues" > "reference" structure
+# Extract CVEs from the current and previous reports
 current_components = current_report.get('components', [])
 previous_components = previous_report.get('components', [])
 
-# Function to extract CVE IDs from the reference field of a component
-def extract_cve_ids(component):
-    references = component.get('securityData', {}).get('securityIssues', {}).get('reference', [])
+# Function to extract CVE IDs from a list of components
+def extract_cve_ids(components):
     cve_ids = set()
-    for reference in references:
-        if reference.startswith("CVE-"):
-            cve_ids.add(reference)
+    for component in components:
+        security_data = component.get('securityData', {})
+        security_issues = security_data.get('securityIssues', [])
+        for issue in security_issues:
+            references = issue.get('reference', [])
+            for reference in references:
+                if reference.startswith("CVE-"):
+                    cve_ids.add(reference)
     return cve_ids
 
 # Extract CVE IDs from the current and previous reports
-current_cve_ids = set(cve_id for component in current_components for cve_id in extract_cve_ids(component))
-previous_cve_ids = set(cve_id for component in previous_components for cve_id in extract_cve_ids(component))
+current_cve_ids = extract_cve_ids(current_components)
+previous_cve_ids = extract_cve_ids(previous_components)
 
 # Find new CVEs introduced in the current report
 new_cves = current_cve_ids - previous_cve_ids
