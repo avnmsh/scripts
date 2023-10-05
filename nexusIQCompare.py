@@ -9,11 +9,11 @@ with open(current_report_path, 'r') as current_report_file, open(previous_report
     current_report = json.load(current_report_file)
     previous_report = json.load(previous_report_file)
 
-# Extract CVE details from the "Components" > "securityData" > "securityIssues" > "reference" structure
+# Extract CVE IDs from the "Components" > "securityData" > "securityIssues" > "reference" structure
 current_components = current_report.get('components', [])
 previous_components = previous_report.get('components', [])
 
-# Function to extract CVE IDs from the reference field
+# Function to extract CVE IDs from the reference field of a component
 def extract_cve_ids(component):
     references = component.get('securityData', {}).get('securityIssues', {}).get('reference', [])
     cve_ids = set()
