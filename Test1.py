@@ -5,8 +5,11 @@ with open('old_report.json', 'r') as old_file, open('new_report.json', 'r') as n
     old_data = json.load(old_file)
     new_data = json.load(new_file)
 
-# Extract the "reference" values from both reports
+# Initialize empty sets for old and new references
 old_references = set()
+new_references = set()
+
+# Extract "reference" values from all "securityData" objects in the old report
 for component in old_data.get("components", []):
     security_data = component.get("securityData")
     if security_data:
@@ -15,7 +18,7 @@ for component in old_data.get("components", []):
             if reference:
                 old_references.add(reference)
 
-new_references = set()
+# Extract "reference" values from all "securityData" objects in the new report
 for component in new_data.get("components", []):
     security_data = component.get("securityData")
     if security_data:
@@ -32,4 +35,4 @@ print("New references in the new report:")
 for reference in new_references_only:
     print(reference)
 
-print(f"Count of new references: {len(new_references_only)}")
+print(f"Count of new references: {len(new_references_only)}") 
